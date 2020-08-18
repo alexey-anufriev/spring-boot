@@ -774,7 +774,7 @@ For `application.properties` files a special `#---` comment is used to mark the 
 	spring.application.name=MyCloudApp
 ----
 
-NOTE: Property file separators must not have any leading or trailing whitespace and must have exactly three hypen characters.
+NOTE: Property file separators must not have any leading or trailing whitespace and must have exactly three hyphen characters.
 
 TIP: Multi-document property files are often used in conjunction with activation properties such as `spring.config.activate.on-profile`.
 See the <<boot-features-external-config-file-activation-properties, next section>> for details.
@@ -3656,8 +3656,8 @@ You can register multiple relying parties under the `spring.security.saml2.relyi
 For security purposes, all actuators other than `/health` and `/info` are disabled by default.
 The configprop:management.endpoints.web.exposure.include[] property can be used to enable the actuators.
 
-If Spring Security is on the classpath and no other WebSecurityConfigurerAdapter is present, all actuators other than `/health` and `/info` are secured by Spring Boot auto-configuration.
-If you define a custom `WebSecurityConfigurerAdapter`, Spring Boot auto-configuration will back off and you will be in full control of actuator access rules.
+If Spring Security is on the classpath and no other `WebSecurityConfigurerAdapter` or `SecurityFilterChain` bean is present, all actuators other than `/health` and `/info` are secured by Spring Boot auto-configuration.
+If you define a custom `WebSecurityConfigurerAdapter` or `SecurityFilterChain` bean, Spring Boot auto-configuration will back off and you will be in full control of actuator access rules.
 
 NOTE: Before setting the `management.endpoints.web.exposure.include`, ensure that the exposed actuators do not contain sensitive information and/or are secured by placing them behind a firewall or by something like Spring Security.
 
@@ -4365,6 +4365,14 @@ The following example shows how to connect to a MongoDB database:
 	}
 ----
 
+If you have defined your own `MongoClient`, it will be used to auto-configure a suitable `MongoDatabaseFactory`.
+
+The auto-configured `MongoClient` is created using a `MongoClientSettings` bean.
+If you have defined your own `MongoClientSettings`, it will be used without modification and the `spring.data.mongodb` properties will be ignored.
+Otherwise a `MongoClientSettings` will be auto-configured and will have the `spring.data.mongodb` properties applied to it.
+In either case, you can declare one or more `MongoClientSettingsBuilderCustomizer` beans to fine-tune the `MongoClientSettings` configuration.
+Each will be called in order with the `MongoClientSettings.Builder` that is used to build the `MongoClientSettings`.
+
 You can set the configprop:spring.data.mongodb.uri[] property to change the URL and configure additional settings such as the _replica set_, as shown in the following example:
 
 [source,properties,indent=0,configprops]
@@ -4383,12 +4391,6 @@ For example, you might declare the following settings in your `application.prope
 	spring.data.mongodb.username=user
 	spring.data.mongodb.password=secret
 ----
-
-If you have defined your own `MongoClient`, it will be used to auto-configure a suitable `MongoDatabaseFactory`.
-
-The auto-configured `MongoClient` is created using `MongoClientSettings`.
-To fine-tune its configuration, declare one or more `MongoClientSettingsBuilderCustomizer` beans.
-Each will be called in order with the `MongoClientSettings.Builder` that is used to build the `MongoClientSettings`.
 
 TIP: If `spring.data.mongodb.port` is not specified, the default of `27017` is used.
 You could delete this line from the example shown earlier.
@@ -4827,7 +4829,7 @@ Spring Data includes repository support for Couchbase.
 For complete details of Spring Data Couchbase, refer to the {spring-data-couchbase-docs}[reference documentation].
 
 You can inject an auto-configured `CouchbaseTemplate` instance as you would with any other Spring Bean, provided a `CouchbaseClientFactory` bean is available.
-This happens when a `Cluster` is availabe, as described above, and a bucket name as been specified:
+This happens when a `Cluster` is available, as described above, and a bucket name has been specified:
 
 [source,properties,indent=0,configprops]
 ----
@@ -5725,7 +5727,7 @@ The following component creates a listener endpoint on the `someTopic` topic:
 ----
 
 If a `KafkaTransactionManager` bean is defined, it is automatically associated to the container factory.
-Similarly, if a `ErrorHandler`, `AfterRollbackProcessor` or `ConsumerAwareRebalanceListener` bean is defined, it is automatically associated to the default factory.
+Similarly, if a `RecordFilterStrategy`, `ErrorHandler`, `AfterRollbackProcessor` or `ConsumerAwareRebalanceListener` bean is defined, it is automatically associated to the default factory.
 
 Depending on the listener type, a `RecordMessageConverter` or `BatchMessageConverter` bean is associated to the default factory.
 If only a `RecordMessageConverter` bean is present for a batch listener, it is wrapped in a `BatchMessageConverter`.
@@ -7908,7 +7910,7 @@ TIP: If multiple auto-configurations have to be defined, there is no need to ord
 
 Each test can use the runner to represent a particular use case.
 For instance, the sample below invokes a user configuration (`UserConfiguration`) and checks that the auto-configuration backs off properly.
-Invoking `run` provides a callback context that can be used with `Assert4J`.
+Invoking `run` provides a callback context that can be used with `AssertJ`.
 
 [source,java,indent=0]
 ----
